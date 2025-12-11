@@ -1,2 +1,3 @@
 .venv
 __ pycache __
+backend/ai/RAW_recipes.csv
