@@ -13,6 +13,9 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Modular routes - this loads all routes from routes/index.js
+app.use('/api', require('./routes'));
+
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',

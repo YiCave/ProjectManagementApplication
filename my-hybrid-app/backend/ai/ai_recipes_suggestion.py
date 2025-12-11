@@ -72,7 +72,7 @@ def detect_ingredients_from_image(image_path: str):
     
     return filtered_ingredients
 
-# Recepie Pipeline
+# Recipe Pipeline
 class RecipeEngine:
     def __init__(self, csv_path: str):
         """
