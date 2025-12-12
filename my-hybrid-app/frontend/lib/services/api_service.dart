@@ -60,18 +60,53 @@ class ApiService {
     }
   }
 
-  /// Get recipe recommendations based on ingredients
-  static Future<Map<String, dynamic>> recommendRecipes(
-    List<String> ingredients,
-  ) async {
+  /// Get recipe recommendations based on ingredients and filters
+  ///
+  /// [ingredients] - Required list of available ingredients
+  /// [maxMinutes] - Optional max cooking time filter
+  /// [cuisines] - Optional list of preferred cuisines
+  /// [vegetarian] - Filter for vegetarian recipes only
+  /// [vegan] - Filter for vegan recipes only
+  /// [halal] - Filter for halal recipes only (excludes pork, bacon, etc.)
+  /// [maxMissingIngredients] - Max number of missing ingredients allowed (default: 5)
+  /// [topK] - Number of recipes to return (default: 10)
+  static Future<Map<String, dynamic>> recommendRecipes({
+    required List<String> ingredients,
+    int? maxMinutes,
+    List<String>? cuisines,
+    bool vegetarian = false,
+    bool vegan = false,
+    bool halal = false,
+    int maxMissingIngredients = 5,
+    int topK = 10,
+  }) async {
     try {
+      final body = {
+        'ingredients': ingredients,
+        'vegetarian': vegetarian,
+        'vegan': vegan,
+        'halal': halal,
+        'maxMissingIngredients': maxMissingIngredients,
+        'topK': topK,
+      };
+
+      // Only add optional filters if they have values
+      if (maxMinutes != null) {
+        body['maxMinutes'] = maxMinutes;
+      }
+      if (cuisines != null && cuisines.isNotEmpty) {
+        body['cuisines'] = cuisines;
+      }
+
       var response = await http
           .post(
             Uri.parse('$baseUrl/ai/recommend-recipes'),
             headers: {'Content-Type': 'application/json'},
-            body: json.encode({'ingredients': ingredients}),
+            body: json.encode(body),
           )
-          .timeout(const Duration(seconds: 30));
+          .timeout(
+            const Duration(seconds: 120),
+          ); // Increased timeout for large CSV processing
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
