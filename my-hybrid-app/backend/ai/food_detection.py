@@ -3,6 +3,12 @@ from PIL import Image
 from dotenv import load_dotenv
 import json
 import os
+import sys
+
+# Fix Windows encoding issues
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 # Load Gemini API Key from .env
 load_dotenv()

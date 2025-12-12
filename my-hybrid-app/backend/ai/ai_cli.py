@@ -12,6 +12,11 @@ import sys
 import json
 import os
 
+# Fix Windows encoding issues
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 # Add current directory to path so we can import our modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

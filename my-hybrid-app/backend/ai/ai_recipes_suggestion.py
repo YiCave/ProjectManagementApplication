@@ -75,11 +75,14 @@ def detect_ingredients_from_image(image_path: str):
 # Recipe Pipeline
 class RecipeEngine:
     def __init__(self, csv_path: str):
-        """
-        Initialize the recipe engine with the RAW_recipes.csv
-        """
-        self.df = pd.read_csv(csv_path)
-        self._prepare_dataframe()
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        pickle_path = os.path.join(script_dir, "recipes_processed.pkl")
+        
+        if os.path.exists(pickle_path):
+            self.df = pd.read_pickle(pickle_path)
+        else:
+            self.df = pd.read_csv(csv_path)
+            self._prepare_dataframe()
 
     @staticmethod
     def _convert_to_python_list (x):

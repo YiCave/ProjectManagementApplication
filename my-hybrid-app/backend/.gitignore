@@ -15,3 +15,6 @@ uploads/
 
 # Node
 node_modules/
+
+#pickle file
+*.pkl
