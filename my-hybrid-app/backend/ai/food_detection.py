@@ -34,7 +34,7 @@ def analyze_food_image (image_path: str) -> dict:
      "description": "short human readable summary"
     }
 
-    **DO NOT** include any extra explaination outside the JSON.
+    **DO NOT** include any extra explanation outside the JSON.
     """
 
     model = genai.GenerativeModel( "gemini-2.5-flash")

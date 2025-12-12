@@ -35,7 +35,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppTheme.primaryGreen.withOpacity(0.1),
+                color: AppTheme.primaryGreen.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -79,7 +79,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               decoration: InputDecoration(
                 hintText: 'SB12345678',
                 hintStyle: TextStyle(
-                  color: AppTheme.textSecondary.withOpacity(0.5),
+                  color: AppTheme.textSecondary.withValues(alpha: 0.5),
                   fontSize: 24,
                   letterSpacing: 4,
                 ),
@@ -124,10 +124,10 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.accentOrange.withOpacity(0.1),
+                color: AppTheme.accentOrange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppTheme.accentOrange.withOpacity(0.3),
+                  color: AppTheme.accentOrange.withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
