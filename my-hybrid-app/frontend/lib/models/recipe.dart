@@ -1,3 +1,5 @@
+import '../utils/recipe_image_helper.dart';
+
 class Recipe {
   final String id;
   final String title;
@@ -6,11 +8,16 @@ class Recipe {
   final List<String> instructions;
   final int cookTimeMinutes;
   final String difficulty;
-  final String imageUrl;
+  final String _imageUrl; // Original image URL (may be empty)
   final List<String> tags;
   final int matchPercentage;
   final int missingIngredients;
   final double score;
+
+  /// Returns the image URL - uses auto-generated placeholder if original is empty
+  String get imageUrl => _imageUrl.isNotEmpty 
+      ? _imageUrl 
+      : RecipeImageHelper.getCuratedImageUrl(title);
 
   Recipe({
     required this.id,
@@ -20,12 +27,12 @@ class Recipe {
     required this.instructions,
     required this.cookTimeMinutes,
     required this.difficulty,
-    required this.imageUrl,
+    required String imageUrl,
     required this.tags,
     this.matchPercentage = 0,
     this.missingIngredients = 0,
     this.score = 0.0,
-  });
+  }) : _imageUrl = imageUrl;
 
   /// Factory constructor to create Recipe from AI API response
   ///
@@ -79,9 +86,11 @@ class Recipe {
       return diff[0].toUpperCase() + diff.substring(1);
     }
 
+    final recipeName = json['name']?.toString() ?? 'Unknown Recipe';
+    
     return Recipe(
       id: json['id']?.toString() ?? '',
-      title: json['name']?.toString() ?? 'Unknown Recipe',
+      title: recipeName,
       category: 'AI Recommended', // API doesn't provide category
       ingredients: parseIngredients(json['ingredients']),
       instructions: [], // API doesn't provide instructions
@@ -89,7 +98,7 @@ class Recipe {
           ? (json['minutes'] as num).toInt()
           : 0,
       difficulty: formatDifficulty(json['difficulty']),
-      imageUrl: '', // API doesn't provide image
+      imageUrl: '', // Empty - will auto-generate from RecipeImageHelper
       tags: [], // API doesn't provide tags
       matchPercentage: calculateMatchPercentage(json['coverage']),
       missingIngredients: json['missing_ingredients'] is num
@@ -108,7 +117,7 @@ class Recipe {
       instructions: instructions,
       cookTimeMinutes: cookTimeMinutes,
       difficulty: difficulty,
-      imageUrl: imageUrl,
+      imageUrl: _imageUrl,
       tags: tags,
       matchPercentage: matchPercentage ?? this.matchPercentage,
       missingIngredients: missingIngredients,

@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   // Change this to your computer's IP address when testing on physical device
-  static const String baseUrl = 'http://192.168.100.23:3000/api';
+  static const String baseUrl = 'http://10.164.106.105:3000/api';
 
   /// Analyze food image using AI
   static Future<Map<String, dynamic>> analyzeFood(File imageFile) async {

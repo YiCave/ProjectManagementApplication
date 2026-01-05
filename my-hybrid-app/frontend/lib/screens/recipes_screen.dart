@@ -800,17 +800,29 @@ class _RecipesScreenState extends State<RecipesScreen> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: recipe.imageUrl.isNotEmpty
-                      ? Image.asset(
-                          recipe.imageUrl,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return _buildPlaceholderImage();
-                          },
-                        )
-                      : _buildPlaceholderImage(),
+                  child: Image.network(
+                    recipe.imageUrl,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 80,
+                        height: 80,
+                        color: AppTheme.cardBackground,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.primaryGreen,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildPlaceholderImage();
+                    },
+                  ),
                 ),
               ),
 
