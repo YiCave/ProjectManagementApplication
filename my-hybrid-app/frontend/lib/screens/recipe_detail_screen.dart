@@ -42,11 +42,24 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               width: double.infinity,
               child: Stack(
                 children: [
-                  Image.asset(
+                  Image.network(
                     widget.recipe.imageUrl,
                     height: 250,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        height: 250,
+                        width: double.infinity,
+                        color: AppTheme.cardBackground,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryGreen,
+                          ),
+                        ),
+                      );
+                    },
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: 250,

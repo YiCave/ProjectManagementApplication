@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../utils/app_theme.dart';
 import '../models/food_item.dart';
+import '../services/api_service.dart';
 import 'delivery_tracking_screen.dart';
 
 class FoodUploadScreen extends StatefulWidget {
@@ -13,12 +16,14 @@ class FoodUploadScreen extends StatefulWidget {
 class _FoodUploadScreenState extends State<FoodUploadScreen> {
   bool _isScanning = false;
   bool _isScanMode = true;
-  
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _valueController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   String _selectedCategory = 'Meat';
   bool _isHalal = true;
   DateTime? _selectedDate;
@@ -58,14 +63,18 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: _isScanMode ? AppTheme.primaryGreen : Colors.transparent,
+                          color: _isScanMode
+                              ? AppTheme.primaryGreen
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           'AI Scan',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: _isScanMode ? Colors.white : AppTheme.textPrimary,
+                            color: _isScanMode
+                                ? Colors.white
+                                : AppTheme.textPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -78,14 +87,18 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: !_isScanMode ? AppTheme.primaryGreen : Colors.transparent,
+                          color: !_isScanMode
+                              ? AppTheme.primaryGreen
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           'Manual Input',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: !_isScanMode ? Colors.white : AppTheme.textPrimary,
+                            color: !_isScanMode
+                                ? Colors.white
+                                : AppTheme.textPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -124,7 +137,10 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                   backgroundColor: AppTheme.primaryGreen,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Start Scanning', style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  'Start Scanning',
+                  style: TextStyle(color: Colors.white),
+                ),
               )
             else if (_isScanMode && _isScanning)
               ElevatedButton(
@@ -133,7 +149,10 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                   backgroundColor: AppTheme.warningRed,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Stop Scanning', style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  'Stop Scanning',
+                  style: TextStyle(color: Colors.white),
+                ),
               )
             else
               ElevatedButton(
@@ -142,7 +161,10 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                   backgroundColor: AppTheme.primaryGreen,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Upload Food Details', style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  'Upload Food Details',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
           ],
         ),
@@ -151,28 +173,99 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
   }
 
   Widget _buildCameraPlaceholder() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.camera_alt,
-          size: 80,
-          color: AppTheme.primaryGreen.withValues(alpha: 0.5),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Point camera at your food',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppTheme.textSecondary,
+    if (_selectedImage != null) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: Image.file(_selectedImage!, fit: BoxFit.cover),
           ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: IconButton(
+              onPressed: () => setState(() => _selectedImage = null),
+              icon: const Icon(Icons.close, color: Colors.white),
+              style: IconButton.styleFrom(backgroundColor: Colors.black54),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.camera_alt,
+            size: 80,
+            color: AppTheme.primaryGreen.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Tap to take photo or select image',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: AppTheme.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'AI will automatically detect food type and details',
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(
+                Icons.camera_alt,
+                color: AppTheme.primaryGreen,
+              ),
+              title: const Text('Take Photo'),
+              onTap: () async {
+                Navigator.pop(context);
+                final XFile? image = await _picker.pickImage(
+                  source: ImageSource.camera,
+                  imageQuality: 80,
+                );
+                if (image != null) {
+                  setState(() => _selectedImage = File(image.path));
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.photo_library,
+                color: AppTheme.primaryGreen,
+              ),
+              title: const Text('Choose from Gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                final XFile? image = await _picker.pickImage(
+                  source: ImageSource.gallery,
+                  imageQuality: 80,
+                );
+                if (image != null) {
+                  setState(() => _selectedImage = File(image.path));
+                }
+              },
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          'AI will automatically detect food type and details',
-          style: Theme.of(context).textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 
@@ -186,9 +279,9 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
         const SizedBox(height: 24),
         Text(
           'Detecting food type...',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: AppTheme.primaryGreen,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: AppTheme.primaryGreen),
         ),
         const SizedBox(height: 8),
         Text(
@@ -227,12 +320,22 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                 labelText: 'Category *',
                 border: OutlineInputBorder(),
               ),
-              items: ['Meat', 'Vegetables', 'Fruits', 'Dairy', 'Grains', 'Prepared Food']
-                  .map((category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      ))
-                  .toList(),
+              items:
+                  [
+                        'Meat',
+                        'Vegetables',
+                        'Fruits',
+                        'Dairy',
+                        'Grains',
+                        'Prepared Food',
+                      ]
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        ),
+                      )
+                      .toList(),
               onChanged: (value) {
                 setState(() {
                   _selectedCategory = value!;
@@ -260,10 +363,7 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
               ),
               child: Row(
                 children: [
-                  Text(
-                    'Halal:',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+                  Text('Halal:', style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(width: 16),
                   Switch(
                     value: _isHalal,
@@ -272,13 +372,17 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                         _isHalal = value;
                       });
                     },
-                    thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+                    thumbColor: WidgetStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
                       if (states.contains(WidgetState.selected)) {
                         return AppTheme.primaryGreen;
                       }
                       return Colors.grey;
                     }),
-                    trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+                    trackColor: WidgetStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
                       if (states.contains(WidgetState.selected)) {
                         return AppTheme.primaryGreen.withValues(alpha: 0.5);
                       }
@@ -289,7 +393,9 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                   Text(
                     _isHalal ? 'Yes' : 'No',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: _isHalal ? AppTheme.primaryGreen : AppTheme.warningRed,
+                      color: _isHalal
+                          ? AppTheme.primaryGreen
+                          : AppTheme.warningRed,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -308,7 +414,10 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, color: AppTheme.primaryGreen),
+                    const Icon(
+                      Icons.calendar_today,
+                      color: AppTheme.primaryGreen,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -316,17 +425,19 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
                         children: [
                           Text(
                             'Expiry Date *',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppTheme.textSecondary,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppTheme.textSecondary),
                           ),
                           Text(
                             _selectedDate != null
                                 ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
                                 : 'Select expiry date',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: _selectedDate != null ? AppTheme.textPrimary : AppTheme.textSecondary,
-                            ),
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  color: _selectedDate != null
+                                      ? AppTheme.textPrimary
+                                      : AppTheme.textSecondary,
+                                ),
                           ),
                         ],
                       ),
@@ -372,21 +483,28 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.accentOrange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.accentOrange.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppTheme.accentOrange.withValues(alpha: 0.3),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.info, color: AppTheme.accentOrange, size: 20),
+                      const Icon(
+                        Icons.info,
+                        color: AppTheme.accentOrange,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Commission Fee Notice',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppTheme.accentOrange,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: AppTheme.accentOrange,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ],
                   ),
@@ -470,55 +588,127 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
     }
   }
 
-  void _startScanning() {
+  void _startScanning() async {
+    if (_selectedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select an image first'),
+          backgroundColor: AppTheme.warningRed,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isScanning = true;
     });
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _isScanning = false;
-        });
-        _showDetectionResult();
+    try {
+      // Call real AI API
+      final result = await ApiService.analyzeFood(_selectedImage!);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isScanning = false;
+      });
+
+      if (result['success'] == true && result['data'] != null) {
+        _showDetectionResultFromAI(result['data']);
+      } else {
+        _showErrorDialog('AI could not analyze the food. Please try again.');
       }
-    });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isScanning = false;
+      });
+
+      _showErrorDialog(
+        'Connection error: $e\n\nMake sure the backend server is running.',
+      );
+    }
   }
 
-  void _stopScanning() {
-    setState(() {
-      _isScanning = false;
-    });
-  }
-
-  void _showDetectionResult() {
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Food Detected!'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDetectionResultFromAI(Map<String, dynamic> data) {
+    final String foodName = data['food_name'] ?? 'Unknown Food';
+    final String category = data['category'] ?? 'Prepared Food';
+    final bool isHalal = data['is_halal'] ?? true;
+    final int expiryDays = data['estimated_expiry_days'] ?? 3;
+    final double estimatedValue = (data['estimated_value'] ?? 10.0).toDouble();
+    final String explanation = data['explanation'] ?? '';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
           children: [
-            const Text('Detected: Chicken Breast'),
-            const Text('Category: Meat'),
-            const Text('Expires in: 3 days'),
-            const Text('Estimated value: RM 12.00'),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.accentOrange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                'Commission: RM 0.36 (3%)\nNet value: RM 11.64',
-                style: TextStyle(fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Would you like to edit these details?'),
+            const Icon(Icons.check_circle, color: AppTheme.primaryGreen),
+            const SizedBox(width: 8),
+            const Text('Food Detected!'),
           ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildResultRow('Food:', foodName),
+              _buildResultRow('Category:', category),
+              _buildResultRow('Halal:', isHalal ? 'Yes ✓' : 'No'),
+              _buildResultRow('Expires in:', '$expiryDays days'),
+              _buildResultRow(
+                'Est. Value:',
+                'RM ${estimatedValue.toStringAsFixed(2)}',
+              ),
+              if (explanation.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    explanation,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.accentOrange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Commission: RM ${(estimatedValue * 0.03).toStringAsFixed(2)} (3%)\nNet value: RM ${(estimatedValue * 0.97).toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -526,10 +716,11 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
               Navigator.pop(context);
               setState(() {
                 _isScanMode = false;
-                _nameController.text = 'Chicken Breast';
-                _selectedCategory = 'Meat';
-                _valueController.text = '12.00';
-                _selectedDate = DateTime.now().add(const Duration(days: 3));
+                _nameController.text = foodName;
+                _selectedCategory = _mapCategory(category);
+                _isHalal = isHalal;
+                _valueController.text = estimatedValue.toStringAsFixed(2);
+                _selectedDate = DateTime.now().add(Duration(days: expiryDays));
               });
             },
             child: const Text('Edit Details'),
@@ -539,20 +730,63 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
               Navigator.pop(context);
               _showSuccessAndTracking(
                 FoodItem(
-                  name: 'Chicken Breast',
-                  category: 'Meat',
-                  isHalal: true,
-                  expiryDate: DateTime.now().add(const Duration(days: 3)),
-                  value: 12.00,
+                  name: foodName,
+                  category: _mapCategory(category),
+                  isHalal: isHalal,
+                  expiryDate: DateTime.now().add(Duration(days: expiryDays)),
+                  value: estimatedValue,
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
-            child: const Text('Looks Good', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+            ),
+            child: const Text(
+              'Confirm & Share',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildResultRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  String _mapCategory(String aiCategory) {
+    final mapping = {
+      'meat': 'Meat',
+      'vegetables': 'Vegetables',
+      'fruits': 'Fruits',
+      'dairy': 'Dairy',
+      'grains': 'Grains',
+      'prepared_food': 'Prepared Food',
+      'prepared food': 'Prepared Food',
+    };
+    return mapping[aiCategory.toLowerCase()] ?? 'Prepared Food';
+  }
+
+  void _stopScanning() {
+    setState(() {
+      _isScanning = false;
+    });
   }
 
   void _submitFoodDetails() {
@@ -586,8 +820,8 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
       isHalal: _isHalal,
       expiryDate: _selectedDate!,
       value: double.parse(_valueController.text),
-      description: _descriptionController.text.trim().isNotEmpty 
-          ? _descriptionController.text.trim() 
+      description: _descriptionController.text.trim().isNotEmpty
+          ? _descriptionController.text.trim()
           : null,
     );
 
@@ -595,8 +829,9 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
   }
 
   void _showSuccessAndTracking(FoodItem foodItem) {
-    final String trackingNumber = 'SB${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
-    
+    final String trackingNumber =
+        'SB${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}';
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -644,10 +879,7 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
             const SizedBox(height: 16),
             const Text(
               'Your food donation has been submitted and a driver will be assigned shortly.',
-              style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Poppins',
-              ),
+              style: TextStyle(fontSize: 14, fontFamily: 'Poppins'),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
