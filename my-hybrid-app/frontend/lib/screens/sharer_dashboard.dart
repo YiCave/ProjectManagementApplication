@@ -22,10 +22,7 @@ class _SharerDashboardState extends State<SharerDashboard> {
       appBar: AppBar(
         title: const Text('SmartBite'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.person_outline), onPressed: () {}),
         ],
       ),
       drawer: const AppDrawer(),
@@ -103,9 +100,9 @@ class _SharerDashboardState extends State<SharerDashboard> {
 
           Text(
             'Your Impact This Month',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
 
@@ -176,9 +173,8 @@ class _SharerDashboardState extends State<SharerDashboard> {
                     children: [
                       Text(
                         'Weekly Impact Trend',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 12),
                       SizedBox(
@@ -208,9 +204,9 @@ class _SharerDashboardState extends State<SharerDashboard> {
 
           Text(
             'Quick Actions',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
 
@@ -317,7 +313,13 @@ class _SharerDashboardState extends State<SharerDashboard> {
     );
   }
 
-  Widget _buildActionCard(String title, String subtitle, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionCard(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -338,14 +340,19 @@ class _SharerDashboardState extends State<SharerDashboard> {
               const SizedBox(height: 12),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 16),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontSize: 16),
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             ],
           ),
@@ -354,7 +361,12 @@ class _SharerDashboardState extends State<SharerDashboard> {
     );
   }
 
-  Widget _buildActivityCard(String title, String status, String time, Color statusColor) {
+  Widget _buildActivityCard(
+    String title,
+    String status,
+    String time,
+    Color statusColor,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -374,19 +386,42 @@ class _SharerDashboardState extends State<SharerDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 16)),
-                  Text(status, style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    title,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    status,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
-            Text(time, style: Theme.of(context).textTheme.bodyMedium),
+            Flexible(
+              child: Text(
+                time,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildEnhancedStatCard(String value, String label, IconData icon, Color color) {
+  Widget _buildEnhancedStatCard(
+    String value,
+    String label,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -414,9 +449,9 @@ class _SharerDashboardState extends State<SharerDashboard> {
           ),
           Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -439,9 +474,7 @@ class _SharerDashboardState extends State<SharerDashboard> {
         const SizedBox(height: 4),
         Text(
           day,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            fontSize: 10,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10),
         ),
       ],
     );

@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../config/api_config.dart';
 
 class ApiService {
-  // Change this to your computer's IP address when testing on physical device
-  static const String baseUrl = 'http://10.164.106.105:3000/api';
+  static String get baseUrl => ApiConfig.baseUrl;
 
   /// Analyze food image using AI
   static Future<Map<String, dynamic>> analyzeFood(File imageFile) async {
@@ -19,7 +20,7 @@ class ApiService {
       );
 
       var streamedResponse = await request.send().timeout(
-        const Duration(seconds: 30),
+        const Duration(seconds: 120),
       );
       var response = await http.Response.fromStream(streamedResponse);
 
@@ -28,6 +29,11 @@ class ApiService {
       } else {
         throw Exception('Failed to analyze food: ${response.statusCode}');
       }
+    } on TimeoutException {
+      throw Exception(
+        'Request timed out while analyzing food. This can happen if the phone cannot reach the backend, '
+        'or if the AI processing takes longer than expected. Tried API: $baseUrl',
+      );
     } catch (e) {
       throw Exception('Error analyzing food: $e');
     }
@@ -46,7 +52,7 @@ class ApiService {
       );
 
       var streamedResponse = await request.send().timeout(
-        const Duration(seconds: 30),
+        const Duration(seconds: 120),
       );
       var response = await http.Response.fromStream(streamedResponse);
 
@@ -55,6 +61,10 @@ class ApiService {
       } else {
         throw Exception('Failed to detect ingredients: ${response.statusCode}');
       }
+    } on TimeoutException {
+      throw Exception(
+        'Request timed out while detecting ingredients. Tried API: $baseUrl',
+      );
     } catch (e) {
       throw Exception('Error detecting ingredients: $e');
     }

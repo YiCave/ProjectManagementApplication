@@ -19,6 +19,7 @@ class DeliveryTrackingScreen extends StatefulWidget {
 class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   int _currentStep = 0;
   String _riderLocation = "pickup";
+  bool _reviewApproved = false;
 
   @override
   void initState() {
@@ -27,30 +28,36 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   }
 
   void _startTrackingAnimation() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _currentStep = 1;
-          _riderLocation = "onway";
-        });
-      }
+    // Stage 0: Review (before assigning a driver)
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      setState(() {
+        _reviewApproved = true;
+      });
     });
 
+    // Stage 1: Driver assigned (starts after review)
     Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) {
-        setState(() {
-          _currentStep = 2;
-          _riderLocation = "hub";
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _currentStep = 1;
+        _riderLocation = "onway";
+      });
     });
 
     Future.delayed(const Duration(seconds: 8), () {
-      if (mounted) {
-        setState(() {
-          _currentStep = 3;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _currentStep = 2;
+        _riderLocation = "hub";
+      });
+    });
+
+    Future.delayed(const Duration(seconds: 11), () {
+      if (!mounted) return;
+      setState(() {
+        _currentStep = 3;
+      });
     });
   }
 
@@ -88,12 +95,27 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Food Pickup In Progress',
+                    _currentStep == 0
+                        ? (_reviewApproved
+                              ? 'Review Approved'
+                              : 'Food Under Review')
+                        : 'Food Pickup In Progress',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  if (_currentStep == 0) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      _reviewApproved
+                          ? 'Proceeding to assign a driver...'
+                          : 'We are verifying your submission...',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Text(
                     'Tracking: ${widget.trackingNumber}',
@@ -116,9 +138,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
 
             Text(
               'Live Tracking',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
             FakeMapWidget(
@@ -131,18 +153,20 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
 
             Text(
               'Pickup Progress',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
 
             _buildProgressStep(
               0,
-              'Processing',
-              'Your food donation is being processed',
+              _reviewApproved ? 'Review Approved' : 'Under Review',
+              _reviewApproved
+                  ? 'Your submission passed review. Assigning a driver now.'
+                  : 'Your food submission is under review',
               Icons.inventory_2,
-              isCompleted: _currentStep >= 0,
+              isCompleted: _currentStep > 0,
               isActive: _currentStep == 0,
             ),
             _buildProgressStep(
@@ -188,16 +212,20 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                       children: [
                         Text(
                           'Estimated Completion',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         Text(
-                          _currentStep >= 3 ? 'Completed!' : '${15 - (_currentStep * 3)} minutes',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: _currentStep >= 3 ? AppTheme.successGreen : AppTheme.accentOrange,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          _currentStep >= 3
+                              ? 'Completed!'
+                              : '${15 - (_currentStep * 3)} minutes',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: _currentStep >= 3
+                                    ? AppTheme.successGreen
+                                    : AppTheme.accentOrange,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ],
                     ),
@@ -214,7 +242,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                 decoration: BoxDecoration(
                   color: AppTheme.primaryGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.primaryGreen.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppTheme.primaryGreen.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +259,11 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.person, color: AppTheme.primaryGreen, size: 20),
+                        const Icon(
+                          Icons.person,
+                          color: AppTheme.primaryGreen,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Ahmad (Rider #1249)',
@@ -240,7 +274,11 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.phone, color: AppTheme.primaryGreen, size: 20),
+                        const Icon(
+                          Icons.phone,
+                          color: AppTheme.primaryGreen,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '+60 12-345 6789',
@@ -260,7 +298,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
                 decoration: BoxDecoration(
                   color: AppTheme.successGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.successGreen.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppTheme.successGreen.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -327,8 +367,8 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     final Color stepColor = isCompleted
         ? AppTheme.successGreen
         : isActive
-            ? AppTheme.accentOrange
-            : Colors.grey;
+        ? AppTheme.accentOrange
+        : Colors.grey;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -376,7 +416,9 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
               height: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentOrange),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.accentOrange,
+                ),
               ),
             ),
           ],

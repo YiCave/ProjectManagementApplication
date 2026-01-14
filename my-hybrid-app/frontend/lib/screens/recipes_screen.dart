@@ -538,13 +538,16 @@ class _RecipesScreenState extends State<RecipesScreen> {
 
           Row(
             children: [
-              Text(
-                'Max Missing Ingredients: $_maxMissingIngredients',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              Expanded(
+                child: Text(
+                  'Max Missing Ingredients: $_maxMissingIngredients',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 '$_maxMissingIngredients',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(

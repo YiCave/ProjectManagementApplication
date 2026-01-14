@@ -15,8 +15,8 @@ class Recipe {
   final double score;
 
   /// Returns the image URL - uses auto-generated placeholder if original is empty
-  String get imageUrl => _imageUrl.isNotEmpty 
-      ? _imageUrl 
+  String get imageUrl => _imageUrl.isNotEmpty
+      ? _imageUrl
       : RecipeImageHelper.getCuratedImageUrl(title);
 
   Recipe({
@@ -87,7 +87,7 @@ class Recipe {
     }
 
     final recipeName = json['name']?.toString() ?? 'Unknown Recipe';
-    
+
     return Recipe(
       id: json['id']?.toString() ?? '',
       title: recipeName,

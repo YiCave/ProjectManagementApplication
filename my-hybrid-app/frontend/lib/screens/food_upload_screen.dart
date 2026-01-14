@@ -626,7 +626,7 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
       });
 
       _showErrorDialog(
-        'Connection error: $e\n\nMake sure the backend server is running.',
+        'Connection error: $e\n\nTried API: ${ApiService.baseUrl}\n\nMake sure the backend server is running and reachable from your phone.',
       );
     }
   }
@@ -762,9 +762,13 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
             child: Text(
               label,
               style: const TextStyle(fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(child: Text(value)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(value, overflow: TextOverflow.ellipsis, maxLines: 3),
+          ),
         ],
       ),
     );
@@ -878,7 +882,7 @@ class _FoodUploadScreenState extends State<FoodUploadScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Your food donation has been submitted and a driver will be assigned shortly.',
+              'Your food donation has been submitted and is under review. A driver will be assigned shortly after approval.',
               style: TextStyle(fontSize: 14, fontFamily: 'Poppins'),
               textAlign: TextAlign.center,
             ),

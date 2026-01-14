@@ -22,10 +22,7 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
       appBar: AppBar(
         title: const Text('SmartBite'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.person_outline), onPressed: () {}),
         ],
       ),
       drawer: const AppDrawer(),
@@ -106,7 +103,9 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const QRScannerScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const QRScannerScreen(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -120,9 +119,9 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                   const SizedBox(width: 12),
                   Text(
                     'Scan QR to Claim',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(color: Colors.white),
                   ),
                 ],
               ),
@@ -150,9 +149,9 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                   const SizedBox(width: 12),
                   Text(
                     'Find SmartBite Hub',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(color: Colors.white),
                   ),
                 ],
               ),
@@ -178,13 +177,18 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'RM 45 worth of food',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: AppTheme.primaryGreen,
-                        fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: Text(
+                        'RM 45 worth of food',
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              color: AppTheme.primaryGreen,
+                              fontWeight: FontWeight.w600,
+                            ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: 8),
                     Text(
                       'RM 200 limit',
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -195,7 +199,9 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                 LinearProgressIndicator(
                   value: 0.225, // 45/200
                   backgroundColor: Colors.grey[300],
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryGreen),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppTheme.primaryGreen,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -242,7 +248,9 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
             decoration: BoxDecoration(
               color: AppTheme.primaryGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.primaryGreen.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppTheme.primaryGreen.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
@@ -272,19 +280,19 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
         children: [
           Text(
             'SmartBite Hub Locations',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
             'Find collection points near you',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 24),
-          
+
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -300,7 +308,11 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(Icons.my_location, color: Colors.white, size: 20),
+                  child: const Icon(
+                    Icons.my_location,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -309,16 +321,19 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                     children: [
                       Text(
                         'You are here',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.red.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: Colors.red.shade700,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       Text(
                         'Jalan University, Kuantan Campus',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.red.shade600,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
                     ],
                   ),
@@ -327,21 +342,21 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           const FakeMapWidget(showHubs: true),
-          
+
           const SizedBox(height: 24),
-          
+
           Text(
             'Available Hubs',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
-          
+
           _buildHubListItem(
             'Central Hub',
             'UMPSA Main Campus, Block A',
@@ -351,7 +366,7 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
           ),
           const SizedBox(height: 12),
           _buildHubListItem(
-            'Kuantan Mall Hub', 
+            'Kuantan Mall Hub',
             'East Coast Mall, Level G',
             '1.8 km away',
             '6 items available',
@@ -382,7 +397,13 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
     return const AboutUsScreen();
   }
 
-  Widget _buildHubListItem(String name, String address, String distance, String items, Color statusColor) {
+  Widget _buildHubListItem(
+    String name,
+    String address,
+    String distance,
+    String items,
+    Color statusColor,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -406,7 +427,10 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                     children: [
                       Text(
                         name,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 16),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleLarge?.copyWith(fontSize: 16),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -414,26 +438,38 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppTheme.textSecondary,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
                           Icon(Icons.location_on, size: 14, color: statusColor),
                           const SizedBox(width: 4),
-                          Text(
-                            distance,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: statusColor,
-                              fontWeight: FontWeight.w500,
+                          Flexible(
+                            child: Text(
+                              distance,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Icon(Icons.access_time, size: 14, color: AppTheme.textSecondary),
+                          Icon(
+                            Icons.access_time,
+                            size: 14,
+                            color: AppTheme.textSecondary,
+                          ),
                           const SizedBox(width: 4),
-                          Text(
-                            _getEstimatedTime(distance),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppTheme.textSecondary,
+                          Flexible(
+                            child: Text(
+                              _getEstimatedTime(distance),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: AppTheme.textSecondary),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -442,7 +478,10 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -500,7 +539,8 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
 
   String _getEstimatedTime(String distance) {
     final distanceValue = double.tryParse(distance.split(' ').first) ?? 1.0;
-    final minutes = (distanceValue * 12).round(); // Assuming 5 km/h walking speed
+    final minutes = (distanceValue * 12)
+        .round(); // Assuming 5 km/h walking speed
     return '~${minutes}min walk';
   }
 
@@ -533,7 +573,11 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppTheme.primaryGreen, size: 20),
+                  Icon(
+                    Icons.info_outline,
+                    color: AppTheme.primaryGreen,
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -561,8 +605,13 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen),
-            child: const Text('Navigate', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+            ),
+            child: const Text(
+              'Navigate',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -600,7 +649,11 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.tips_and_updates, color: AppTheme.accentOrange, size: 20),
+                  Icon(
+                    Icons.tips_and_updates,
+                    color: AppTheme.accentOrange,
+                    size: 20,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -623,7 +676,12 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
     );
   }
 
-  Widget _buildClaimedItemCard(String title, String expiry, String claimedTime, Color statusColor) {
+  Widget _buildClaimedItemCard(
+    String title,
+    String expiry,
+    String claimedTime,
+    Color statusColor,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -645,7 +703,9 @@ class _RecipientDashboardState extends State<RecipientDashboard> {
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 16),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
